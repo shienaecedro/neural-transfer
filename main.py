@@ -22,7 +22,7 @@ customtkinter.set_default_color_theme("theme/MoonlitSky.json")
 
 # Initialize main application window
 app = customtkinter.CTk(fg_color="black")
-app.geometry("520x520")
+app.geometry("1000x520")
 app.title("Photo Art Style")
 
 # Variables to track image inputs and processing status
@@ -101,7 +101,7 @@ def slider_event(value):
 def create_top():
     global toplevel
     toplevel = customtkinter.CTkToplevel()
-    toplevel.title("Photo Art Style")
+    toplevel.title("Neural Transfer")
     toplevel.geometry("600x415")
     toplevel.resizable(width=False, height=False)
     toplevel.configure(fg_color="black")
@@ -122,13 +122,11 @@ def top_widgets():
     x=372.0,
     y=135.0,
     )
-    button_image_2 = tk.PhotoImage(
-    file=("images/button_1.png"))
-    twitter_button = customtkinter.CTkButton(
-        toplevel, text="", command=sharetwthread,image=button_image_2,border_width=0,fg_color="transparent",width=17
+    button_image_2 = tk.PhotoImage(file="images/button_3.png")
+    download_button = customtkinter.CTkButton(
+    toplevel, text="", command=on_download_button_click, image=button_image_2, border_width=0, fg_color="transparent", width=17
     )
-    twitter_button.place(x=372.0,
-    y=189.0,)
+    download_button.place(x=372.0, y=189.0)
     button_image_3 = tk.PhotoImage(
     file=("images/button_2.png"))
     copy_button = customtkinter.CTkButton(
@@ -156,9 +154,10 @@ def style_event():
     if stylepath:
         styleinput = True
         try:
-            styleinput = True
-            image_label2.configure(text=stylepath)
-
+            image = Image.open(stylepath)
+            image_to_display2 = customtkinter.CTkImage(image, size=(300, 300))
+            image_label2.configure(image=image_to_display2)
+            image_label2.image = image_to_display2
         except (FileNotFoundError, PermissionError) as e:
             print(f"Error opening image: {e}")
 
@@ -412,21 +411,44 @@ def copy_imgur_link(imgur_link):
     except tk.TclError:
         messagebox.showerror("Error", "Failed to copy link. Please check clipboard permissions.")
 
-# UI components
+def on_download_button_click():
+    # Assuming 'displayimg' holds the image file path
+    img = Image.open(displayimg)
+    save_image(img)
 
+
+def save_image(img):
+    if img is None:
+        messagebox.showerror("Error", "No image provided.")
+        return
+
+    file_path = filedialog.asksaveasfilename(defaultextension=".png",
+                                             filetypes=[("PNG files", ".png"),
+                                                        ("All files", ".*")])
+    if file_path:
+        try:
+            img.save(file_path)
+            messagebox.showinfo("Success", f"Image saved: {file_path}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not save image: {e}")
+
+
+# UI components
 button1 = customtkinter.CTkButton(app, text="Select Content Image", command=content_event)
-button1.grid(row=3, column=3, padx=5, pady=3, sticky="ns")
+button1.grid(row=3, column=2, padx=10, pady=5)
 
 placeholder_image1 = Image.open("images/imgholder.jpg")
 placeholder_image_to_display1 = customtkinter.CTkImage(placeholder_image1, size=(300, 300))
-image_label1 = customtkinter.CTkLabel(app, image=placeholder_image_to_display1, text="", fg_color="White", width=310, height=310)
-image_label1.grid(row=2, column=3, padx=15, pady=15, sticky="ns")
+image_label1 = customtkinter.CTkLabel(app, image=placeholder_image_to_display1, text="",fg_color="White",width=310,height=310)
+image_label1.grid(row=2, column=2, padx=50, pady=30)
 
 button2 = customtkinter.CTkButton(app, text="Select Style Image", command=style_event)
-button2.grid(row=4, column=3, padx=10, pady=5, sticky="ns")
+button2.grid(row=3, column=4, padx=10, pady=5)
 
-image_label2 = customtkinter.CTkLabel(app, text="Select Style Image", fg_color="Grey", width=310, height=30)
-image_label2.grid(row=5, column=3, padx=15, pady=15, sticky="ns")
+placeholder_image2 = Image.open("images/imgholder.jpg")
+placeholder_image_to_display2 = customtkinter.CTkImage(placeholder_image2, size=(300, 300))
+image_label2 = customtkinter.CTkLabel(app, image=placeholder_image_to_display2, text="",fg_color="White",width=310,height=310)
+image_label2.grid(row=2, column=4, padx=50, pady=30)
 
 horizontal = customtkinter.CTkSlider(app, from_=1, to=1000, command=slider_event)
 horizontal.grid(row=5, column=3)
