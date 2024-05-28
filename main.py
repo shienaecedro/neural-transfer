@@ -61,7 +61,7 @@ def neuralthread():
         neural_thread = neuralthread1()  
         neural_thread.start()
         if neural_thread.is_alive():
-            button3.configure(app, text="cancel_function", command=cancel_function)
+            button3.configure(app, text="Cancel", command=cancel_function)
             horizontal.grid_remove()
             horizontal_label.grid_remove()
             horizontal_label2.grid_remove()
