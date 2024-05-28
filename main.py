@@ -379,8 +379,8 @@ def back_function():
     app.deiconify()
 
 def upload_image_to_imgur(displayimg):
-    client_id = '9a3ec0ee4b97b64'
-    client_secret = '4fba82309dd56809b0eaa54bd826c9f741a3033e'
+    client_id = 'd08fdb37a5c1ed6'
+    client_secret = '66d863a18a5436f8c6039be4684ae16228b68a94'
     client = ImgurClient(client_id, client_secret)
     image = client.upload_from_path(displayimg, anon=True)
     return image['link']
