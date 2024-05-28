@@ -15,39 +15,35 @@ from torchvision.models import vgg19, VGG19_Weights
 from imgurpython import ImgurClient
 
 
-# Initialize appearance mode for customtkinter
-customtkinter.set_appearance_mode("System")
-customtkinter.set_appearance_mode("dark")
-customtkinter.set_default_color_theme("theme/MoonlitSky.json")
 
-# Initialize main application window
-app = customtkinter.CTk(fg_color="black")
-app.geometry("1000x520")
-app.title("Photo Art Style")
+customtkinter.set_appearance_mode("light")
+customtkinter.set_default_color_theme("theme/dark-blue.json")
 
-# Variables to track image inputs and processing status
+
+app = customtkinter.CTk(fg_color="White")
+app.geometry("702x560")
+app.title("Photo Art Style Transfer")
+
+
 clicked = False
 styleinput = False
 contentinput = False
 
-# Function to create a thread for neural style transfer
+
 neuralthread1 = lambda: threading.Thread(target=neural_style_transfer)
 
-# Function to create a thread for Sharing and Copying Link
+
 facebookthread = lambda: threading.Thread(target=share_on_facebook(imgur_link))
 copythread = lambda: threading.Thread(target=copy_imgur_link(imgur_link))
 
-# Function to initiate Facebook sharing thread
 def sharefbthread():
     fbthread = facebookthread()
     fbthread.start()
 
-# Function to initiate Imgur link copying thread
 def sharecpthread():
     cpthread = copythread()
     cpthread.start()
 
-# Function to handle neural style transfer thread initiation
 def neuralthread():
     if not styleinput and not contentinput:
         error_label1 = customtkinter.CTkLabel(app, text="Input Content Image", text_color="red")
@@ -67,17 +63,16 @@ def neuralthread():
     else:
         global clicked
         clicked = False
-        neural_thread = neuralthread1()  # Assuming neuralthread1 exists and handles image processing
+        neural_thread = neuralthread1()  
         neural_thread.start()
         if neural_thread.is_alive():
             button3.configure(app, text="Cancel", command=cancel)
             horizontal.grid_remove()
             horizontal_label.grid_remove()
             horizontal_label2.grid_remove()
-            progress.grid(row=5, column=3, pady=20)
-            progress_percentage_label.grid(row=4, column=3)
+            progress.grid(row=5, column=2, columnspan=2, pady=20)
+            progress_percentage_label.grid(row=4, column=2, columnspan=2)
 
-# Function to handle cancellation of neural style transfer
 def cancel():
     global clicked
     clicked = True
@@ -87,21 +82,18 @@ def cancel():
     horizontal_label.grid(row=6, column=3)
     horizontal_label2.grid(row=4, column=3)
 
-# Function to handle slider value change event
 def slider_event(value):
     text_var.set(f'{int(horizontal.get())}')
 
-# Function to create top-level window for displaying styled image and share options
 def create_top():
     global toplevel
     toplevel = customtkinter.CTkToplevel()
-    toplevel.title("Photo Art Style")
+    toplevel.title("Photo Art Style Transfer")
     toplevel.geometry("600x415")
     toplevel.resizable(width=False, height=False)
-    toplevel.configure(fg_color="black")
+    toplevel.configure(fg_color="White")
     top_widgets()
 
-#Function to Display widgets for the top-level window
 def top_widgets():
 
     output = Image.open(displayimg)
@@ -111,8 +103,8 @@ def top_widgets():
     button_image_1 = tk.PhotoImage(
     file=("images/button_1.png"))
 
-    share_label = customtkinter.CTkLabel(toplevel, text="Share Image", text_color="white", font=("Helvetica", 14))
-    share_label.place(x=426.0, y=40.0)
+    share_label = customtkinter.CTkLabel(toplevel, text="Share Image", text_color="#1f538d", font=("Helvetica", 18))
+    share_label.place(x=432.0, y=40.0)
 
     facebook_button = customtkinter.CTkButton(
         toplevel,text="", command=sharefbthread,image=button_image_1,border_width=0,fg_color="transparent",width=17
@@ -148,12 +140,10 @@ def top_widgets():
         y=243.0
     )
 
-# Function to handle back button event
 def back_event():
     toplevel.withdraw()
     app.deiconify()
 
-# Function to handle selection of style image
 def style_event():
     global stylepath, styleinput
     stylepath = filedialog.askopenfilename(
@@ -170,7 +160,6 @@ def style_event():
         except (FileNotFoundError, PermissionError) as e:
             print(f"Error opening image: {e}")
 
-# Function to handle selection of content image
 def content_event():
     global contentinput, contentpath
     contentpath = filedialog.askopenfilename(
@@ -188,9 +177,8 @@ def content_event():
             print(f"Error opening image: {e}")
 
 progress = customtkinter.CTkProgressBar(app)
-progress_percentage_label = customtkinter.CTkLabel(app, text="0%", text_color="white")
+progress_percentage_label = customtkinter.CTkLabel(app, text="0%", text_color="#1f538d")
 
-# Function to handle neural style transfer
 def neural_style_transfer():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.set_default_device(device)
@@ -395,7 +383,6 @@ def neural_style_transfer():
         app.wait_window(toplevel)
         app.deiconify()
 
-# Function to upload styled image to Imgur and get the link
 def upload_image_to_imgur(displayimg):
     client_id = '9a3ec0ee4b97b64'
     client_secret = '4fba82309dd56809b0eaa54bd826c9f741a3033e'
@@ -403,7 +390,6 @@ def upload_image_to_imgur(displayimg):
     image = client.upload_from_path(displayimg, anon=True)
     return image['link']
 
-# Function to share styled image on Facebook
 def share_on_facebook(imgur_link):
     facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={imgur_link}"
     webbrowser.open(facebook_url, new=1)
@@ -437,35 +423,35 @@ def save_image(img):
             messagebox.showerror("Error", f"Could not save image: {e}")
 
 
-# UI components
 button1 = customtkinter.CTkButton(app, text="Select Content Image", command=content_event)
-button1.grid(row=3, column=2, padx=10, pady=5)
+button1.grid(row=3, column=2, padx=5, pady=5)
 
 placeholder_image1 = Image.open("images/imgholder.jpg")
 placeholder_image_to_display1 = customtkinter.CTkImage(placeholder_image1, size=(300, 300))
-image_label1 = customtkinter.CTkLabel(app, image=placeholder_image_to_display1, text="",fg_color="White",width=310,height=310)
-image_label1.grid(row=2, column=2, padx=50, pady=30)
+image_label1 = customtkinter.CTkLabel(app, image=placeholder_image_to_display1, text="", fg_color="White", width=310, height=310)
+image_label1.grid(row=2, column=2, padx=20, pady=10)
 
 button2 = customtkinter.CTkButton(app, text="Select Style Image", command=style_event)
-button2.grid(row=3, column=4, padx=10, pady=5)
+button2.grid(row=3, column=3, padx=5, pady=5) 
 
 placeholder_image2 = Image.open("images/imgholder.jpg")
 placeholder_image_to_display2 = customtkinter.CTkImage(placeholder_image2, size=(300, 300))
-image_label2 = customtkinter.CTkLabel(app, image=placeholder_image_to_display2, text="",fg_color="White",width=310,height=310)
-image_label2.grid(row=2, column=4, padx=50, pady=30)
+image_label2 = customtkinter.CTkLabel(app, image=placeholder_image_to_display2, text="", fg_color="White", width=310, height=310)
+image_label2.grid(row=2, column=3, padx=20, pady=10)
 
 horizontal = customtkinter.CTkSlider(app, from_=1, to=1000, command=slider_event)
-horizontal.grid(row=5, column=3)
+horizontal.grid(row=5, column=2, columnspan=2, pady=10)
 text_var = tk.StringVar(value="")
-horizontal_label2 = customtkinter.CTkLabel(app, text="Quality")
-horizontal_label2.grid(row=4, column=3)
-horizontal_label = customtkinter.CTkLabel(app, textvariable=text_var)
-horizontal_label.grid(row=6, column=3)
 
-# Main styling function execution button
+horizontal_label2 = customtkinter.CTkLabel(app, text="Image Quality Render", text_color="#1f538d")
+horizontal_label2.grid(row=4, column=2, columnspan=2, pady=5)
+
+horizontal_label = customtkinter.CTkLabel(app, textvariable=text_var, text_color="#1f538d")
+horizontal_label.grid(row=6, column=2, columnspan=2, pady=5)
+
 button3 = customtkinter.CTkButton(app, text="Start Styling", command=neuralthread)
-button3.grid(row=7, column=3)
+button3.grid(row=7, column=2, columnspan=2, pady=10)
 
-# Make the app non-resizable and start the main loop
 app.resizable(width=False, height=False)
+
 app.mainloop()
