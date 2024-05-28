@@ -35,18 +35,12 @@ neuralthread1 = lambda: threading.Thread(target=neural_style_transfer)
 
 # Function to create a thread for Sharing and Copying Link
 facebookthread = lambda: threading.Thread(target=share_on_facebook(imgur_link))
-twitterthread = lambda: threading.Thread(target=share_on_twitter(imgur_link))
 copythread = lambda: threading.Thread(target=copy_imgur_link(imgur_link))
 
 # Function to initiate Facebook sharing thread
 def sharefbthread():
     fbthread = facebookthread()
     fbthread.start()
-
-# Function to initiate Twitter sharing thread
-def sharetwthread():
-    twthread = twitterthread()
-    twthread.start()
 
 # Function to initiate Imgur link copying thread
 def sharecpthread():
@@ -101,7 +95,7 @@ def slider_event(value):
 def create_top():
     global toplevel
     toplevel = customtkinter.CTkToplevel()
-    toplevel.title("Neural Transfer")
+    toplevel.title("Photo Art Style")
     toplevel.geometry("600x415")
     toplevel.resizable(width=False, height=False)
     toplevel.configure(fg_color="black")
@@ -109,35 +103,50 @@ def create_top():
 
 #Function to Display widgets for the top-level window
 def top_widgets():
+
     output = Image.open(displayimg)
     displayoutput = customtkinter.CTkImage(output, size=(350, 400))
     image_label3 = customtkinter.CTkLabel(toplevel, image=displayoutput, text="",fg_color="White",width=355,height=405)
     image_label3.place(x = 5, y = 5)
     button_image_1 = tk.PhotoImage(
-    file=("images/button_3.png"))
+    file=("images/button_1.png"))
+
+    share_label = customtkinter.CTkLabel(toplevel, text="Share Image", text_color="white", font=("Helvetica", 14))
+    share_label.place(x=426.0, y=40.0)
+
     facebook_button = customtkinter.CTkButton(
         toplevel,text="", command=sharefbthread,image=button_image_1,border_width=0,fg_color="transparent",width=17
     )
     facebook_button.place(
-    x=372.0,
+    x=422.0,
     y=135.0,
     )
-    button_image_2 = tk.PhotoImage(file="images/button_3.png")
+    button_image_2 = tk.PhotoImage(
+        file=("images/button_2.png"))
     download_button = customtkinter.CTkButton(
-    toplevel, text="", command=on_download_button_click, image=button_image_2, border_width=0, fg_color="transparent", width=17
+        toplevel, text="", command=on_download_button_click, image=button_image_2, border_width=0, fg_color="transparent", width=17
     )
-    download_button.place(x=372.0, y=189.0)
+    download_button.place(
+        x=422.0, 
+        y=189.0
+    )
     button_image_3 = tk.PhotoImage(
-    file=("images/button_2.png"))
+    file=("images/button_4.png"))
     copy_button = customtkinter.CTkButton(
         toplevel, text="", command=sharecpthread,image=button_image_3,border_width=0,fg_color="transparent",width=17
     )
-    copy_button.place( x=372.0,
-    y=81.0,)
+    copy_button.place(
+        x=422.0,
+        y=81.0
+    )
     button_image_4 = tk.PhotoImage(
-    file=("images/button_4.png"))
-    backbutton = customtkinter.CTkButton(toplevel,text="",command=back_event,image=button_image_4,border_width=0,fg_color="transparent",width=17)
-    backbutton.place(x=372.0,y=243.0)
+    file=("images/button_3.png"))
+    back_button = customtkinter.CTkButton(toplevel,text="",command=back_event,image=button_image_4,border_width=0,fg_color="transparent",width=17
+    )
+    back_button.place(
+        x=422.0,
+        y=243.0
+    )
 
 # Function to handle back button event
 def back_event():
@@ -399,10 +408,6 @@ def share_on_facebook(imgur_link):
     facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={imgur_link}"
     webbrowser.open(facebook_url, new=1)
 
-def share_on_twitter(imgur_link):
-    twitter_url = f"https://twitter.com/intent/tweet?url={imgur_link}"
-    webbrowser.open(twitter_url, new=1)
-
 def copy_imgur_link(imgur_link):
     """Copies the Imgur link to the clipboard and displays a confirmation message."""
     try:
@@ -412,7 +417,6 @@ def copy_imgur_link(imgur_link):
         messagebox.showerror("Error", "Failed to copy link. Please check clipboard permissions.")
 
 def on_download_button_click():
-    # Assuming 'displayimg' holds the image file path
     img = Image.open(displayimg)
     save_image(img)
 
